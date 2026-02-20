@@ -1,38 +1,77 @@
-Role Name
-=========
+ansible-role-maintenance
+========================
 
-A brief description of the role goes here.
+Déploie une page de maintenance dynamique via NGINX sur des serveurs Ubuntu/Debian et Rocky Linux/RedHat.
+
+Le rôle installe et démarre NGINX, supprime la page par défaut, puis génère une page de maintenance HTML personnalisée à partir d'un template Jinja2 contenant le nom de l'application, la date de fin de maintenance et un email de contact.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- Ansible 2.9+
+- Accès `become` (sudo) sur les machines cibles
+- Pas de prérequis supplémentaire : NGINX est installé par le rôle
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Variables définies dans `vars/main.yml` (surchargeables) :
+
+| Variable         | Valeur par défaut                  | Description                          |
+|------------------|------------------------------------|--------------------------------------|
+| `nom_app`        | `"Quiz Ansible"`                   | Nom de l'application en maintenance  |
+| `fin_maintenance`| `"20 février 2026 à 08h00"`        | Date/heure de fin de maintenance     |
+| `email_contact`  | `"admin@quiz-ansible.lab"`         | Email de contact affiché sur la page |
+
+Variables Ansible utilisées automatiquement :
+
+- `ansible_hostname` — nom de la machine affiché sur la page
+- `ansible_distribution` — distribution Linux
+- `ansible_date_time.date` — date du déploiement
+- `ansible_os_family` — détermine apt/dnf et la gestion de NGINX
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Aucune dépendance externe.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+- hosts: all
+  become: true
+  roles:
+    - role: EliasMeh.maintenance
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+# Surcharger les variables :
+- hosts: all
+  become: true
+  roles:
+    - role: EliasMeh.maintenance
+      vars:
+        nom_app: "Mon Application"
+        fin_maintenance: "25 février 2026 à 10h00"
+        email_contact: "support@example.com"
+```
+
+Compatibilité
+-------------
+
+| OS               | Testé |
+|------------------|-------|
+| Ubuntu 22.04     | ✅    |
+| Ubuntu 24.04     | ✅    |
+| Rocky Linux 9    | ✅    |
+
+> **Note :** Sur Rocky Linux en conteneur Docker (sans systemd), NGINX est démarré directement via la commande `nginx` au lieu du service systemd.
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+EliasMeh — [github.com/EliasMeh](https://github.com/EliasMeh)
