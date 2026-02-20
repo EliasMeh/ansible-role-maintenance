@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ nom_app }} - Maintenance en cours</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background: #16213e;
+            padding: 60px 40px;
+            border-radius: 12px;
+            border: 1px solid #0f3460;
+            max-width: 600px;
+        }
+        .icon { font-size: 80px; margin-bottom: 20px; }
+        h1 { font-size: 2em; color: #e94560; margin-bottom: 10px; }
+        h2 { font-size: 1.3em; color: #a8dadc; margin-bottom: 30px; }
+        .info {
+            background: #0f3460;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info p { margin: 8px 0; font-size: 1em; }
+        .info span { color: #e94560; font-weight: bold; }
+        .contact { margin-top: 30px; font-size: 0.95em; color: #a8dadc; }
+        .contact a { color: #e94560; text-decoration: none; }
+        .footer { margin-top: 30px; font-size: 0.75em; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🔧</div>
+        <h1>Maintenance en cours</h1>
+        <h2>{{ nom_app }}</h2>
+
+        <div class="info">
+            <p>⏳ Fin prévue : <span>{{ fin_maintenance }}</span></p>
+            <p>🖥️ Serveur : <span>{{ ansible_hostname }}</span></p>
+            <p>🐧 Système : <span>{{ ansible_distribution }} {{ ansible_distribution_version }}</span></p>
+        </div>
+
+        <div class="contact">
+            <p>Besoin d'aide ? Contactez-nous :</p>
+            <p><a href="mailto:{{ email_contact }}">{{ email_contact }}</a></p>
+        </div>
+
+        <div class="footer">
+            Généré automatiquement par Ansible le {{ ansible_date_time.date }}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for ansible-role-maintenance
+
+- name: Mise à jour du cache (Ubuntu/Debian)
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Mise à jour du cache (Rocky/RedHat)
+  ansible.builtin.dnf:
+    update_cache: true
+  when: ansible_os_family == "RedHat"
+
+- name: Installation de NGINX (Ubuntu/Debian)
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+  when: ansible_os_family == "Debian"
+  notify: restart nginx
+
+- name: Installation de NGINX (Rocky/RedHat)
+  ansible.builtin.dnf:
+    name: nginx
+    state: present
+  when: ansible_os_family == "RedHat"
+  notify: restart nginx
+
+- name: Démarrage de NGINX (Ubuntu/Debian)
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+  when: ansible_os_family == "Debian"
+
+- name: Démarrage de NGINX (Rocky/RedHat - conteneur sans systemd)
+  ansible.builtin.command: nginx
+  args:
+    creates: /var/run/nginx.pid
+  when: ansible_os_family == "RedHat"
+
+- name: Suppression de la page NGINX par défaut (Ubuntu/Debian)
+  ansible.builtin.file:
+    path: /var/www/html/index.nginx-debian.html
+    state: absent
+  when: ansible_os_family == "Debian"
+
+- name: Suppression de la page NGINX par défaut (Rocky/RedHat)
+  ansible.builtin.file:
+    path: /usr/share/nginx/html/index.html
+    state: absent
+  when: ansible_os_family == "RedHat"
+
+- name: Génération de la page de maintenance via Jinja2
+  ansible.builtin.template:
+    src: maintenance.html.j2
+    dest: /tmp/maintenance.html
+    mode: '0644'
+
+- name: Activation de la page de maintenance (Ubuntu/Debian)
+  ansible.builtin.copy:
+    src: /tmp/maintenance.html
+    dest: /var/www/html/index.html
+    remote_src: true
+    mode: '0644'
+  when: ansible_os_family == "Debian"
+  notify: restart nginx
+
+- name: Activation de la page de maintenance (Rocky/RedHat)
+  ansible.builtin.copy:
+    src: /tmp/maintenance.html
+    dest: /usr/share/nginx/html/index.html
+    remote_src: true
+    mode: '0644'
+  when: ansible_os_family == "RedHat"
+  notify: restart nginx

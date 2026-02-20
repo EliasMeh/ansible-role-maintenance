@@ -1,0 +1,15 @@
+#SPDX-License-Identifier: MIT-0
+---
+# handlers file for ansible-role-maintenance
+
+- name: restart nginx debian
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+  when: ansible_os_family == "Debian"
+  listen: restart nginx
+
+- name: restart nginx redhat
+  ansible.builtin.command: nginx -s reload
+  when: ansible_os_family == "RedHat"
+  listen: restart nginx

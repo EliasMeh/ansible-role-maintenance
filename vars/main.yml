@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for ansible-role-maintenance
+
+nom_app: "TEST TEST"
+fin_maintenance: "20 février 2026 à 08h00"
+email_contact: "bruh@bruhbruh"
